@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--color for app -->
+    <color name="colorPrimary">#B71C1C</color>
+    <color name="colorPrimaryDark">#6C1111</color>
+    <color name="colorAccent">#E39595</color>
+    <color name="black">#000000</color>
+
+
+    <!--color for text -->
+    <color name="primary_text_color">#363A43</color>
+    <color name="secondary_text_color">#7A8089</color>
+
+
+    <!--for snackbar baseactivity-->
+    <color name="snackbar_error_color">#F72400</color>
+
+</resources>
