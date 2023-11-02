@@ -21,6 +21,7 @@ class SignInActivity : BaseActivity() {
 
     override  fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //hello
 
         // Initialize the binding
         binding = ActivitySignInBinding.inflate(layoutInflater)
