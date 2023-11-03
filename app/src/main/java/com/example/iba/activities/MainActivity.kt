@@ -8,16 +8,20 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.bumptech.glide.Glide
 import com.example.iba.R
 import com.example.iba.databinding.ActivityMainBinding
 import com.example.iba.databinding.NavHeaderMainBinding
+import com.example.iba.firebase.BankingRepository
 import com.example.iba.firebase.FirestoreClass
 import com.example.iba.models.User
+import com.example.iba.utils.Constants
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -73,13 +77,45 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         // Get the current logged in user details.
         FirestoreClass().loadUserData(this@MainActivity)
 
-        //for updating balance
-        /*
-        updateBalanceTextView()
-         */
+        getBalance()
+
+        BankingRepository().getField(getCurrentUserID(), "email") { email ->
+            if (email != null) {
+                val tv_email = findViewById<TextView>(R.id.tv_main_email)
+                tv_email.text = "Email = " + email.toString()
+            } else {
+                println("Failed to retrieve the email.")
+            }
+        }
+
+        BankingRepository().getField(getCurrentUserID(), "name") { name ->
+            if (name != null) {
+                val tv_name = findViewById<TextView>(R.id.tv_main_name)
+                tv_name.text = "Name = " +name.toString()
+            } else {
+                println("Failed to retrieve the name.")
+            }
+        }
 
 
     }
+
+
+    fun getBalance() {
+        val banking = BankingRepository() // Create an instance of the Banking class
+        val userId = getCurrentUserID()// Replace with the actual user ID
+        banking.getBalance(userId) { balance ->
+            if (balance != null) {
+                val tv_balance = findViewById<TextView>(R.id.tv_balance)
+                tv_balance.text = "Balance = "+balance.toString()
+            } else {
+                println("Failed to retrieve the balance.")
+            }
+        }
+    }
+
+
+
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -180,37 +216,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             Log.e("Cancelled", "Cancelled")
         }
     }
-    /*
-
-        fun updateBalanceTextView() {
-            val button = findViewById<Button>(R.id.button)
-
-    // This variable keeps track of whether the balance is currently visible or not.
-            var isBalanceVisible = false
-
-            button.setOnClickListener {
-                if (isBalanceVisible) {
-                    // If the balance is currently visible, change the button text to "Show Balance."
-                    button.text = "Show Balance"
-                } else {
-                    // If the balance is currently hidden, replace 'getInitialBalance()' with the actual method to get the balance.
-                    FirestoreClass().getInitialBalance { initialBalance ->
-                        runOnUiThread {
-                            // Set the button text to the actual balance.
-                            button.text = "Balance: $initialBalance Rs"
-                        }
-                    }
-                }
-                // Toggle the visibility state.
-                isBalanceVisible = !isBalanceVisible
-            }
-
-        }
-
-     */
 
 }
-
-
-
 

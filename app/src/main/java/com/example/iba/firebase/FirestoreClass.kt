@@ -68,54 +68,6 @@ open class FirestoreClass {
             }
     }
 
-
-    //this was in register user for banking
-    // Create a subcollection of transactions for the user.
-    //banking
-    /*
-    val transactionsCollection = mFireStore.collection(Constants.USERS)
-        .document(getCurrentUserID())
-        .collection(Constants.TRANSACTIONS)
-
-    // Set the initial account balance to zero.
-    transactionsCollection.document("initial_balance").set(mapOf("balance" to 0))
-
-     */
-
-    //code
-
-    /*
-         // Set the user's account balance to zero.
-         mFireStore.collection(Constants.USERS)
-             .document(getCurrentUserID())
-             .set("account_balance" to 0)
-     */
-
-
-    /*
-        fun getInitialBalance(callback: (Long) -> Unit) {
-            val db = Firebase.firestore
-            val collectionReference = db.collection("users")
-            val documentReference = collectionReference
-                .document(getCurrentUserID())
-                .collection("transactions")
-                .document("initial_balance")
-
-            documentReference.addSnapshotListener { documentSnapshot, e ->
-                if (e != null) {
-                    Log.e("Firestore", "Error fetching initial_balance", e)
-                    return@addSnapshotListener
-                }
-                if (documentSnapshot != null && documentSnapshot.exists()) {
-                    val initialBalance = documentSnapshot.getLong("balance") ?: 0
-                    callback(initialBalance)
-                }
-            }
-        }
-
-     */
-
-
     fun loadUserData(activity: Activity) {
 
         // Here we pass the collection name from which we wants the data.
@@ -219,5 +171,7 @@ open class FirestoreClass {
                 )
             }
     }
+
+
 
 }
