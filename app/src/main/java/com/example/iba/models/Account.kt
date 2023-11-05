@@ -5,8 +5,8 @@ import android.os.Parcelable
 
 data class Account(
     val accountId: String = "",
-    val balance: Double = 0.0,
-    val transactionHistory: List<Transaction> = emptyList()
+    var balance: Double = 0.0,
+    var transactionHistory: MutableList<Transaction> = mutableListOf()
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readString()!!,

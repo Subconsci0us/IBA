@@ -95,6 +95,7 @@ open class FirestoreClass {
 
                     is MyProfileActivity -> {
                         activity.setUserDataInUI(loggedInUser)
+
                     }
                 }
 

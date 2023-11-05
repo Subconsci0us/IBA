@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.WindowManager
 import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import com.example.iba.R
 import com.example.iba.databinding.ActivitySignUpBinding
@@ -17,7 +16,6 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.example.iba.models.User
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Date
 
 class SignUpActivity : BaseActivity() {

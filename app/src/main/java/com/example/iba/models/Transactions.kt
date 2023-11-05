@@ -4,6 +4,7 @@ package com.example.iba.models
 import android.os.Parcel
 import android.os.Parcelable
 import java.util.Date
+
 // for Transfer val transaction = Transaction(transactionType = TransactionType.TRANSFER)
 
 data class Transaction(

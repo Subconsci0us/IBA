@@ -77,8 +77,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         // Get the current logged in user details.
         FirestoreClass().loadUserData(this@MainActivity)
 
-        getBalance()
 
+        //for printing email
         BankingRepository().getField(getCurrentUserID(), "email") { email ->
             if (email != null) {
                 val tv_email = findViewById<TextView>(R.id.tv_main_email)
@@ -88,6 +88,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
 
+
+        //for printing name
         BankingRepository().getField(getCurrentUserID(), "name") { name ->
             if (name != null) {
                 val tv_name = findViewById<TextView>(R.id.tv_main_name)
@@ -97,6 +99,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
 
+
+
+        //for balance
+        getBalance()
+
+
+        //sending money button function
+        var sending_money_btn = findViewById<Button>(R.id.Send_Money)
+        sending_money_btn.setOnClickListener {
+            val intent = Intent(this, SendActivity::class.java)
+            startActivity(intent)
+
+        }
 
     }
 
@@ -113,8 +128,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
     }
-
-
 
 
     override fun onBackPressed() {
