@@ -57,7 +57,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("bruhhdw")
+
         // Initialize the binding for the activity's layout
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -106,9 +106,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
         //sending money button function
-        var sending_money_btn = findViewById<Button>(R.id.Send_Money)
+        var sending_money_btn = findViewById<Button>(R.id.btn_MainActivity_Send_Money)
         sending_money_btn.setOnClickListener {
             val intent = Intent(this, SendActivity::class.java)
+            startActivity(intent)
+
+        }
+
+        var transaction_history_btn = findViewById<Button>(R.id.btn_MainActivity_Transaction_History)
+        transaction_history_btn.setOnClickListener {
+            val intent = Intent(this, TransactionHistoryActivity::class.java)
             startActivity(intent)
 
         }

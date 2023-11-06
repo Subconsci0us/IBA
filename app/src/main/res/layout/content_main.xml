@@ -52,6 +52,7 @@
 
 
 
+
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
@@ -61,18 +62,27 @@
         android:gravity="center">
 
 
+
         <Button
-            android:id="@+id/Send_Money"
+            android:id="@+id/btn_MainActivity_Send_Money"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Send Money" />
 
-
         <Button
-            android:id="@+id/Receiver_money"
+            android:id="@+id/btn_MainActivity_Receiver_money"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Recieve Money" />
+
+        <Button
+            android:id="@+id/btn_MainActivity_Transaction_History"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transaction History" />
+
+
+
 
 
     </LinearLayout>

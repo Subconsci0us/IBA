@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".activities.TransactionHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SendActivity"
             android:exported="false" />
         <activity

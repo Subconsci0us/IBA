@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.iba.models.User
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -56,8 +57,7 @@ class BankingRepository : FirestoreClass() {
                 callback(null)
             }
     }
-
-
+    /*
     fun transferTransaction(receiverEmail: String, amount: Double) {
         val db = FirebaseFirestore.getInstance()
         val senderDocRef = db.collection("users").document(getCurrentUserID())
@@ -67,6 +67,7 @@ class BankingRepository : FirestoreClass() {
             if (senderDocumentSnapshot.exists()) {
                 val senderAccount = senderDocumentSnapshot.data?.get("account") as? Map<*, *>
                 val senderBalance = senderAccount?.get("balance") as? Double
+                Log.d("Checking","senderBalance $senderBalance")
 
                 receiverQuery.get().addOnSuccessListener { querySnapshot ->
                     if (!querySnapshot.isEmpty) {
@@ -75,6 +76,8 @@ class BankingRepository : FirestoreClass() {
                         val receiverDocument = document.data
                         val receiverAccountBalance = receiverDocument?.get("account") as? Map<*, *>
                         val receiverBalance = receiverAccountBalance?.get("balance") as? Double
+                        Log.d("Checking","receiverBalance $receiverBalance")
+
 
                         if (senderBalance != null && receiverBalance != null) {
                             if (senderBalance >= amount && receiverBalance >= amount) {
@@ -90,6 +93,91 @@ class BankingRepository : FirestoreClass() {
                                         "account.balance",
                                         receiverBalance + amount
                                     )
+
+                                    // Create a transaction document in the "Transactions" collection
+                                    val transactionsCollection = db.collection("Transactions")
+                                    val transactionData = hashMapOf(
+                                        "transactionDate" to FieldValue.serverTimestamp(),
+                                        "transactionType" to "transfer",
+                                        "senderId" to senderDocRef.id,
+                                        "receiverId" to receiverDocRef.id,
+                                        "amount" to amount
+                                    )
+
+                                    val newTransactionDoc = transactionsCollection.document()
+                                    transaction.set(newTransactionDoc, transactionData)
+
+                                    // Update sender's transaction history
+                                    val senderTransactionHistory = senderAccount?.get("transactionHistory") as? ArrayList<HashMap<String, Any>> ?: ArrayList()
+                                    val senderTransactionEntry = hashMapOf(
+                                        "transactionDate" to FieldValue.serverTimestamp(),
+                                        "amount" to amount
+                                    )
+                                    senderTransactionHistory.add(senderTransactionEntry)
+                                    transaction.update(senderDocRef, "account.transactionHistory", senderTransactionHistory)
+
+                                    // Update receiver's transaction history
+                                    val receiverTransactionHistory = receiverAccountBalance?.get("transactionHistory") as? ArrayList<HashMap<String, Any>> ?: ArrayList()
+                                    val receiverTransactionEntry = hashMapOf(
+                                        "transactionDate" to FieldValue.serverTimestamp(),
+                                        "amount" to amount
+                                    )
+                                    receiverTransactionHistory.add(receiverTransactionEntry)
+                                    transaction.update(receiverDocRef, "account.transactionHistory", receiverTransactionHistory)
+                                }
+                            } else {
+                                println("Insufficient balance")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+     */
+
+
+    fun transferTransaction(receiverEmail: String, amount: Double) {
+        val db = FirebaseFirestore.getInstance()
+        val senderDocRef = db.collection("users").document(getCurrentUserID())
+        val receiverQuery = db.collection("users").whereEqualTo("email", receiverEmail).limit(1)
+
+        senderDocRef.get().addOnSuccessListener { senderDocumentSnapshot ->
+            Log.d("Firestore", "Sender Document Snapshot: $senderDocumentSnapshot")
+            if (senderDocumentSnapshot.exists()) {
+                val senderAccount = senderDocumentSnapshot.data?.get("account") as? Map<*, *>
+                Log.d("Firestore", "Sender Account: $senderAccount")
+
+                val senderBalance = senderAccount?.get("balance") as? Long
+                Log.d("Firestore","senderBalance $senderBalance")
+
+
+                receiverQuery.get().addOnSuccessListener { querySnapshot ->
+                    if (!querySnapshot.isEmpty) {
+                        val document = querySnapshot.documents[0]
+                        val receiverDocRef = db.collection("users").document(document.id)
+                        val receiverDocument = document.data
+                        Log.d("Checking","receiverDocument $receiverDocument")
+                        val receiverAccountBalance = receiverDocument?.get("account") as? Map<*, *>
+                        Log.d("Checking","receiverAccountBalance $receiverAccountBalance")
+
+                        val receiverBalance = receiverAccountBalance?.get("balance") as? Double
+                        Log.d("Checking","receiverBalance $receiverBalance")
+
+                        if (senderBalance != null && receiverBalance != null) {
+                            if (senderBalance >= amount && receiverBalance >= amount) {
+                                db.runTransaction { transaction ->
+                                    transaction.update(
+                                        senderDocRef,
+                                        "account.balance",
+                                        senderBalance - amount
+                                    )
+
+                                    transaction.update(
+                                        receiverDocRef,
+                                        "account.balance",
+                                        receiverBalance + amount)
                                 }
                             }
 
@@ -100,105 +188,11 @@ class BankingRepository : FirestoreClass() {
                 }
             }
         }
-
     }
 }
-/*
-     fun transferTransaction(receiverEmail: String, amount: Double) {
-        // Replace this with the actual way you obtain the user's email securely.
-        val senderEmail = "current_user_email@example.com"
 
 
 
-        withContext(Dispatchers.IO) {
-            // Start a Firestore transaction.
-            firestore.runTransaction { transaction ->
-                // Query the sender's account based on their email.
-                val senderQuery =
-                    firestore.collection("users").whereEqualTo("email", senderEmail).limit(1)
-                val senderQuerySnapshot = senderQuery.get().await()
-
-
-                val senderAccountDocument = senderQuerySnapshot.documents[0].reference
-
-                // Query the receiver's account based on their email.
-                val receiverQuery =
-                    firestore.collection("users").whereEqualTo("email", receiverEmail).limit(1)
-                val receiverQuerySnapshot = receiverQuery.get().await()
-
-
-                val receiverAccountDocument = receiverQuerySnapshot.documents[0].reference
-
-                // Get the sender's account balance.
-                val senderAccountBalance =
-                    senderQuerySnapshot.documents[0].getDouble("account.balance") ?: 0.0
-
-                // Get the receiver's account balance.
-                val receiverAccountBalance =
-                    receiverQuerySnapshot.documents[0].getDouble("account.balance") ?: 0.0
-
-                // Check if the sender has enough balance.
-                if (senderAccountBalance >= amount) {
-                    // Update the sender's account balance.
-                    transaction.update(
-                        senderAccountDocument,
-                        "account.balance",
-                        senderAccountBalance - amount
-                    )
-
-                    // Update the receiver's account balance.
-                    transaction.update(
-                        receiverAccountDocument,
-                        "account.balance",
-                        receiverAccountBalance + amount
-                    )
-
-                    // Create a transaction document.
-                    val transactionDocument = firestore.collection("transactions").document()
-
-                    // Set the transaction details.
-                    val transactionData = hashMapOf(
-                        "transactionId" to transactionDocument.id,
-                        "transactionDate" to Date(),
-                        "transactionType" to "transfer",
-                        "senderUuid" to senderEmail,
-                        "receiverUuid" to receiverEmail,
-                        "amount" to amount
-                    )
-
-                    transaction.set(transactionDocument, transactionData)
-
-                    // Update the sender's account transaction history.
-                    val senderTransactionHistory =
-                        senderQuerySnapshot.documents[0].get("account.transactionHistory") as MutableList<String>
-                    senderTransactionHistory.add(transactionDocument.id)
-                    transaction.update(
-                        senderAccountDocument,
-                        "account.transactionHistory",
-                        senderTransactionHistory
-                    )
-
-                    // Update the receiver's account transaction history.
-                    val receiverTransactionHistory =
-                        receiverQuerySnapshot.documents[0].get("account.transactionHistory") as MutableList<String>
-                    receiverTransactionHistory.add(transactionDocument.id)
-                    transaction.update(
-                        receiverAccountDocument,
-                        "account.transactionHistory",
-                        receiverTransactionHistory
-                    )
-                } else {
-                    // Throw an exception for insufficient balance.
-                    throw InsufficientBalanceException()
-                }
-            }
-
-            // Handle exceptions (e.g., InsufficientBalanceException, SenderAccountNotFoundException, ReceiverAccountNotFoundException)
-
-        }
-    }
-
- */
 
 
 
