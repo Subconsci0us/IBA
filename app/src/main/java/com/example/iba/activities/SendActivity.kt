@@ -16,14 +16,21 @@ class SendActivity : AppCompatActivity() {
 
         val recipientEmailEditText = findViewById<EditText>(R.id.et_email_send_money)
         val sendMoneyButton = findViewById<Button>(R.id.btn_send_money)
+        val enterAmount = findViewById<EditText>(R.id.et_amount_send_money)
 
         sendMoneyButton.setOnClickListener {
             val recipientEmail = recipientEmailEditText.text.toString()
-            val amount = 10.00
+            val amountText = enterAmount.text.toString()
 
-            // Call the transferTransaction() function directly.
-            BankingRepository().transferTransaction(recipientEmail, amount)
-            Toast.makeText(this, "Money sent successfully!", Toast.LENGTH_SHORT).show()
+            if (amountText.isNotEmpty()) {
+                val amount = amountText.toDouble()
+
+                // Call the transferTransaction() function directly.
+                BankingRepository().transferTransaction(recipientEmail, amount)
+                Toast.makeText(this, "Money sent successfully!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Please enter a valid amount.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
