@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 
 val db = Firebase.firestore
+
 class BankingRepository : FirestoreClass() {
 
 
@@ -57,52 +58,50 @@ class BankingRepository : FirestoreClass() {
     }
 
 
-
     fun transferTransaction(receiverEmail: String, amount: Double) {
+        val db = FirebaseFirestore.getInstance()
+        val senderDocRef = db.collection("users").document(getCurrentUserID())
+        val receiverQuery = db.collection("users").whereEqualTo("email", receiverEmail).limit(1)
 
+        senderDocRef.get().addOnSuccessListener { senderDocumentSnapshot ->
+            if (senderDocumentSnapshot.exists()) {
+                val senderAccount = senderDocumentSnapshot.data?.get("account") as? Map<*, *>
+                val senderBalance = senderAccount?.get("balance") as? Double
 
-        db.runTransaction { transaction ->
-            val senderDocRef = db.collection("users").document(getCurrentUserID())
-
-            val senderDocument = transaction.get(senderDocRef)
-
-            val receiverQuery = db.collection("users").whereEqualTo("email", receiverEmail).limit(1)
-
-            receiverQuery.get().addOnCompleteListener(OnCompleteListener<QuerySnapshot> { task ->
-                if (task.isSuccessful) {
-                    val querySnapshot = task.result
-
-                    if (querySnapshot != null && !querySnapshot.isEmpty) {
+                receiverQuery.get().addOnSuccessListener { querySnapshot ->
+                    if (!querySnapshot.isEmpty) {
                         val document = querySnapshot.documents[0]
+                        val receiverDocRef = db.collection("users").document(document.id)
+                        val receiverDocument = document.data
+                        val receiverAccountBalance = receiverDocument?.get("account") as? Map<*, *>
+                        val receiverBalance = receiverAccountBalance?.get("balance") as? Double
 
-                        val itemData = document.data
-                        val receiverAccountBalance = itemData?.get("balance") as? Double
+                        if (senderBalance != null && receiverBalance != null) {
+                            if (senderBalance >= amount && receiverBalance >= amount) {
+                                db.runTransaction { transaction ->
+                                    transaction.update(
+                                        senderDocRef,
+                                        "account.balance",
+                                        senderBalance - amount
+                                    )
 
-                        if (receiverAccountBalance != null && receiverAccountBalance > amount) {
-                            // Update the sender's account balance
-                            var double = senderDocument.getDouble("balance")
+                                    transaction.update(
+                                        receiverDocRef,
+                                        "account.balance",
+                                        receiverBalance + amount
+                                    )
+                                }
+                            }
 
-                            transaction.update(senderDocRef, "balance",
-                            )
-
-                            println(senderDocument.data)
-
-                            // Update the receiver's account balance
-                            transaction.update(document.reference, "balance", receiverAccountBalance + amount)
                         } else {
-                            println("shitt")
-                            // Handle the case of insufficient balance
+                            println("Insufficient balance")
                         }
                     }
-                } else {
-                    println("bruhmomet")
-                    // Handle the case where the receiver's account was not found
                 }
-            })
+            }
         }
+
     }
-
-
 }
 /*
      fun transferTransaction(receiverEmail: String, amount: Double) {
