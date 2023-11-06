@@ -2,6 +2,8 @@ package com.example.iba.firebase
 
 
 import android.util.Log
+import com.example.iba.models.Transaction
+import com.example.iba.models.TransactionType
 import com.example.iba.models.User
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
@@ -57,74 +59,85 @@ class BankingRepository : FirestoreClass() {
                 callback(null)
             }
     }
-    /*
+
     fun transferTransaction(receiverEmail: String, amount: Double) {
         val db = FirebaseFirestore.getInstance()
         val senderDocRef = db.collection("users").document(getCurrentUserID())
         val receiverQuery = db.collection("users").whereEqualTo("email", receiverEmail).limit(1)
 
         senderDocRef.get().addOnSuccessListener { senderDocumentSnapshot ->
+            Log.d("Firestore", "Sender Document Snapshot: $senderDocumentSnapshot")
             if (senderDocumentSnapshot.exists()) {
                 val senderAccount = senderDocumentSnapshot.data?.get("account") as? Map<*, *>
+                Log.d("Firestore", "Sender Account: $senderAccount")
+
                 val senderBalance = senderAccount?.get("balance") as? Double
-                Log.d("Checking","senderBalance $senderBalance")
+                Log.d("Firestore", "senderBalance $senderBalance")
 
                 receiverQuery.get().addOnSuccessListener { querySnapshot ->
                     if (!querySnapshot.isEmpty) {
                         val document = querySnapshot.documents[0]
                         val receiverDocRef = db.collection("users").document(document.id)
                         val receiverDocument = document.data
-                        val receiverAccountBalance = receiverDocument?.get("account") as? Map<*, *>
-                        val receiverBalance = receiverAccountBalance?.get("balance") as? Double
-                        Log.d("Checking","receiverBalance $receiverBalance")
+                        Log.d("Checking", "receiverDocument $receiverDocument")
+                        val receiverAccount = receiverDocument?.get("account") as? Map<*, *>
+                        Log.d("Checking", "receiverAccountBalance $receiverAccount")
 
+                        val receiverBalance = receiverAccount?.get("balance") as? Double
+                        Log.d("Checking", "receiverBalance $receiverBalance")
 
                         if (senderBalance != null && receiverBalance != null) {
                             if (senderBalance >= amount && receiverBalance >= amount) {
-                                db.runTransaction { transaction ->
-                                    transaction.update(
-                                        senderDocRef,
-                                        "account.balance",
-                                        senderBalance - amount
-                                    )
+                                // Create a Transaction object
+                                val transaction = Transaction(
+                                    transactionType = TransactionType.TRANSFER,
+                                    amount = amount,
+                                    senderUuid = getCurrentUserID(),
+                                    receiverUuid = document.id
+                                )
 
-                                    transaction.update(
-                                        receiverDocRef,
-                                        "account.balance",
-                                        receiverBalance + amount
-                                    )
+                                // Store the Transaction object in Firestore
+                                val transactionsCollection = db.collection("transactions")
+                                transactionsCollection.add(transaction)
+                                    .addOnSuccessListener { documentReference ->
+                                        val transactionId = documentReference.id
+                                        Log.d("Firestore", "Transaction added with ID: $transactionId")
 
-                                    // Create a transaction document in the "Transactions" collection
-                                    val transactionsCollection = db.collection("Transactions")
-                                    val transactionData = hashMapOf(
-                                        "transactionDate" to FieldValue.serverTimestamp(),
-                                        "transactionType" to "transfer",
-                                        "senderId" to senderDocRef.id,
-                                        "receiverId" to receiverDocRef.id,
-                                        "amount" to amount
-                                    )
+                                        // Perform the transaction by updating sender and receiver balances
+                                        db.runTransaction { transaction ->
+                                            transaction.update(
+                                                senderDocRef,
+                                                "account.balance",
+                                                senderBalance - amount
+                                            )
 
-                                    val newTransactionDoc = transactionsCollection.document()
-                                    transaction.set(newTransactionDoc, transactionData)
+                                            transaction.update(
+                                                receiverDocRef,
+                                                "account.balance",
+                                                receiverBalance + amount
+                                            )
+                                        }
 
-                                    // Update sender's transaction history
-                                    val senderTransactionHistory = senderAccount?.get("transactionHistory") as? ArrayList<HashMap<String, Any>> ?: ArrayList()
-                                    val senderTransactionEntry = hashMapOf(
-                                        "transactionDate" to FieldValue.serverTimestamp(),
-                                        "amount" to amount
-                                    )
-                                    senderTransactionHistory.add(senderTransactionEntry)
-                                    transaction.update(senderDocRef, "account.transactionHistory", senderTransactionHistory)
+                                        // Add the transaction to the sender's transactionHistory
+                                        val senderTransactionHistory = senderAccount["transactionHistory"] as? MutableList<Map<String, Any>> ?: mutableListOf()
+                                        val senderTransactionRecord = mapOf(
+                                            "transactionId" to transactionId,
+                                            "transactionType" to TransactionType.TRANSFER.toString(),
+                                            "amount" to amount
+                                        )
+                                        senderTransactionHistory.add(senderTransactionRecord)
+                                        senderDocRef.update("account.transactionHistory", senderTransactionHistory)
 
-                                    // Update receiver's transaction history
-                                    val receiverTransactionHistory = receiverAccountBalance?.get("transactionHistory") as? ArrayList<HashMap<String, Any>> ?: ArrayList()
-                                    val receiverTransactionEntry = hashMapOf(
-                                        "transactionDate" to FieldValue.serverTimestamp(),
-                                        "amount" to amount
-                                    )
-                                    receiverTransactionHistory.add(receiverTransactionEntry)
-                                    transaction.update(receiverDocRef, "account.transactionHistory", receiverTransactionHistory)
-                                }
+                                        // Add the transaction to the receiver's transactionHistory
+                                        val receiverTransactionHistory = receiverAccount["transactionHistory"] as? MutableList<Map<String, Any>> ?: mutableListOf()
+                                        val receiverTransactionRecord = mapOf(
+                                            "transactionId" to transactionId,
+                                            "transactionType" to TransactionType.TRANSFER.toString(),
+                                            "amount" to amount
+                                        )
+                                        receiverTransactionHistory.add(receiverTransactionRecord)
+                                        receiverDocRef.update("account.transactionHistory", receiverTransactionHistory)
+                                    }
                             } else {
                                 println("Insufficient balance")
                             }
@@ -135,9 +148,89 @@ class BankingRepository : FirestoreClass() {
         }
     }
 
+
+
+
+
+
+
+    /* working with transaction collection implementation
+        fun transferTransaction(receiverEmail: String, amount: Double) {
+            val db = FirebaseFirestore.getInstance()
+            val senderDocRef = db.collection("users").document(getCurrentUserID())
+            val receiverQuery = db.collection("users").whereEqualTo("email", receiverEmail).limit(1)
+
+            senderDocRef.get().addOnSuccessListener { senderDocumentSnapshot ->
+                Log.d("Firestore", "Sender Document Snapshot: $senderDocumentSnapshot")
+                if (senderDocumentSnapshot.exists()) {
+                    val senderAccount = senderDocumentSnapshot.data?.get("account") as? Map<*, *>
+                    Log.d("Firestore", "Sender Account: $senderAccount")
+
+                    val senderBalance = senderAccount?.get("balance") as? Double
+                    Log.d("Firestore", "senderBalance $senderBalance")
+
+                    receiverQuery.get().addOnSuccessListener { querySnapshot ->
+                        if (!querySnapshot.isEmpty) {
+                            val document = querySnapshot.documents[0]
+                            val receiverDocRef = db.collection("users").document(document.id)
+                            val receiverDocument = document.data
+                            Log.d("Checking", "receiverDocument $receiverDocument")
+                            val receiverAccountBalance = receiverDocument?.get("account") as? Map<*, *>
+                            Log.d("Checking", "receiverAccountBalance $receiverAccountBalance")
+
+                            val receiverBalance = receiverAccountBalance?.get("balance") as? Double
+                            Log.d("Checking", "receiverBalance $receiverBalance")
+
+                            if (senderBalance != null && receiverBalance != null) {
+                                if (senderBalance >= amount && receiverBalance >= amount) {
+                                    // Create a Transaction object
+                                    val transaction = Transaction(
+                                        transactionType = TransactionType.TRANSFER,
+                                        amount = amount,
+                                        senderUuid = getCurrentUserID(),
+                                        receiverUuid = document.id
+                                    )
+
+                                    // Store the Transaction object in Firestore
+                                    val transactionsCollection = db.collection("transactions")
+                                    transactionsCollection.add(transaction)
+                                        .addOnSuccessListener { documentReference ->
+                                            val transactionId = documentReference.id
+                                            Log.d("Firestore", "Transaction added with ID: $transactionId")
+
+                                            // Perform the transaction by updating sender and receiver balances
+                                            db.runTransaction { transaction ->
+                                                transaction.update(
+                                                    senderDocRef,
+                                                    "account.balance",
+                                                    senderBalance - amount
+                                                )
+
+                                                transaction.update(
+                                                    receiverDocRef,
+                                                    "account.balance",
+                                                    receiverBalance + amount
+                                                )
+                                            }
+                                        }
+                                } else {
+                                    println("Insufficient balance")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
      */
 
 
+
+
+
+
+/* working without transaction collection implementation
     fun transferTransaction(receiverEmail: String, amount: Double) {
         val db = FirebaseFirestore.getInstance()
         val senderDocRef = db.collection("users").document(getCurrentUserID())
@@ -189,6 +282,8 @@ class BankingRepository : FirestoreClass() {
             }
         }
     }
+
+ */
 }
 
 
