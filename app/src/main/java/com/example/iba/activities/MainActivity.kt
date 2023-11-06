@@ -57,7 +57,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        println("bruhhdw")
         // Initialize the binding for the activity's layout
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root

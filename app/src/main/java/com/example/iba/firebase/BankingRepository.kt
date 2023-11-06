@@ -1,25 +1,18 @@
 package com.example.iba.firebase
 
 
-import android.content.ContentValues.TAG
 import android.util.Log
-
 import com.example.iba.models.User
-import com.google.android.gms.tasks.Tasks.await
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import java.util.Date
-import java.util.UUID
 
-
+val db = Firebase.firestore
 class BankingRepository : FirestoreClass() {
-    val db = Firebase.firestore
+
 
     private lateinit var mUserDetails: User
     fun getBalance(id: String, callback: (Number?) -> Unit) {
@@ -63,92 +56,153 @@ class BankingRepository : FirestoreClass() {
             }
     }
 
-    class InsufficientBalanceException : Exception("Insufficient funds")
-    class UserNotFoundException : Exception("User not found")
 
-    private val firestore = FirebaseFirestore.getInstance()
-    suspend fun transferTransaction(receiverEmail: String, amount: Double) {
+
+    fun transferTransaction(receiverEmail: String, amount: Double) {
+
+
+        db.runTransaction { transaction ->
+            val senderDocRef = db.collection("users").document(getCurrentUserID())
+
+            val senderDocument = transaction.get(senderDocRef)
+
+            val receiverQuery = db.collection("users").whereEqualTo("email", receiverEmail).limit(1)
+
+            receiverQuery.get().addOnCompleteListener(OnCompleteListener<QuerySnapshot> { task ->
+                if (task.isSuccessful) {
+                    val querySnapshot = task.result
+
+                    if (querySnapshot != null && !querySnapshot.isEmpty) {
+                        val document = querySnapshot.documents[0]
+
+                        val itemData = document.data
+                        val receiverAccountBalance = itemData?.get("balance") as? Double
+
+                        if (receiverAccountBalance != null && receiverAccountBalance > amount) {
+                            // Update the sender's account balance
+                            var double = senderDocument.getDouble("balance")
+
+                            transaction.update(senderDocRef, "balance",
+                            )
+
+                            println(senderDocument.data)
+
+                            // Update the receiver's account balance
+                            transaction.update(document.reference, "balance", receiverAccountBalance + amount)
+                        } else {
+                            println("shitt")
+                            // Handle the case of insufficient balance
+                        }
+                    }
+                } else {
+                    println("bruhmomet")
+                    // Handle the case where the receiver's account was not found
+                }
+            })
+        }
+    }
+
+
+}
+/*
+     fun transferTransaction(receiverEmail: String, amount: Double) {
         // Replace this with the actual way you obtain the user's email securely.
-        val senderEmail =
+        val senderEmail = "current_user_email@example.com"
 
-        // Initialize Firestore
-        val firestore = FirebaseFirestore.getInstance()
 
-        // Use a Kotlin coroutine scope.
-        try {
+
+        withContext(Dispatchers.IO) {
             // Start a Firestore transaction.
             firestore.runTransaction { transaction ->
                 // Query the sender's account based on their email.
-                val senderQuery = firestore.collection("users").whereEqualTo("email", senderEmail).limit(1)
-                val senderQuerySnapshot = transaction.get(senderQuery).documents
+                val senderQuery =
+                    firestore.collection("users").whereEqualTo("email", senderEmail).limit(1)
+                val senderQuerySnapshot = senderQuery.get().await()
 
-                // Ensure that the sender's account exists.
-                if (senderQuerySnapshot.isNotEmpty()) {
-                    val senderAccountDocument = senderQuerySnapshot[0].reference
 
-                    // Get the receiver's account document.
-                    val receiverAccountQuery = firestore.collection("users").whereEqualTo("email", receiverEmail).limit(1)
-                    val receiverAccountQuerySnapshot = transaction.get(receiverAccountQuery).documents
+                val senderAccountDocument = senderQuerySnapshot.documents[0].reference
 
-                    // Ensure that the receiver's account exists.
-                    if (receiverAccountQuerySnapshot.isNotEmpty()) {
-                        val receiverAccountDocument = receiverAccountQuerySnapshot[0].reference
+                // Query the receiver's account based on their email.
+                val receiverQuery =
+                    firestore.collection("users").whereEqualTo("email", receiverEmail).limit(1)
+                val receiverQuerySnapshot = receiverQuery.get().await()
 
-                        // Get the sender's account balance.
-                        val senderAccountData = transaction.get(senderAccountDocument)
-                        val senderAccountBalance = senderAccountData.getDouble("account.balance") ?: 0.0
 
-                        // Get the receiver's account balance.
-                        val receiverAccountData = transaction.get(receiverAccountDocument)
-                        val receiverAccountBalance = receiverAccountData.getDouble("account.balance") ?: 0.0
+                val receiverAccountDocument = receiverQuerySnapshot.documents[0].reference
 
-                        // Check if the sender has enough balance.
-                        if (senderAccountBalance >= amount) {
-                            // Update the sender's account balance.
-                            transaction.update(senderAccountDocument, "account.balance", senderAccountBalance - amount)
+                // Get the sender's account balance.
+                val senderAccountBalance =
+                    senderQuerySnapshot.documents[0].getDouble("account.balance") ?: 0.0
 
-                            // Update the receiver's account balance.
-                            transaction.update(receiverAccountDocument, "account.balance", receiverAccountBalance + amount)
+                // Get the receiver's account balance.
+                val receiverAccountBalance =
+                    receiverQuerySnapshot.documents[0].getDouble("account.balance") ?: 0.0
 
-                            // Create a transaction document.
-                            val transactionDocument = firestore.collection("transactions").document()
+                // Check if the sender has enough balance.
+                if (senderAccountBalance >= amount) {
+                    // Update the sender's account balance.
+                    transaction.update(
+                        senderAccountDocument,
+                        "account.balance",
+                        senderAccountBalance - amount
+                    )
 
-                            // Set the transaction details.
-                            val transactionData = hashMapOf(
-                                "transactionId" to transactionDocument.id,
-                                "transactionDate" to Date(),
-                                "transactionType" to "transfer",
-                                "senderUuid" to senderEmail,
-                                "receiverUuid" to receiverEmail,
-                                "amount" to amount
-                            )
+                    // Update the receiver's account balance.
+                    transaction.update(
+                        receiverAccountDocument,
+                        "account.balance",
+                        receiverAccountBalance + amount
+                    )
 
-                            transaction.set(transactionDocument, transactionData)
+                    // Create a transaction document.
+                    val transactionDocument = firestore.collection("transactions").document()
 
-                            // Update the sender's account transaction history.
-                            val senderTransactionHistory = senderAccountData.get("account.transactionHistory") as MutableList<String>
-                            senderTransactionHistory.add(transactionDocument.id)
-                            transaction.update(senderAccountDocument, "account.transactionHistory", senderTransactionHistory)
+                    // Set the transaction details.
+                    val transactionData = hashMapOf(
+                        "transactionId" to transactionDocument.id,
+                        "transactionDate" to Date(),
+                        "transactionType" to "transfer",
+                        "senderUuid" to senderEmail,
+                        "receiverUuid" to receiverEmail,
+                        "amount" to amount
+                    )
 
-                            // Update the receiver's account transaction history.
-                            val receiverTransactionHistory = receiverAccountData.get("account.transactionHistory") as MutableList<String>
-                            receiverTransactionHistory.add(transactionDocument.id)
-                            transaction.update(receiverAccountDocument, "account.transactionHistory", receiverTransactionHistory)
-                        } else {
-                            // Throw an exception for insufficient balance.
-                            throw InsufficientBalanceException()
-                        }
-                    } else {
-                        // Handle the case where the receiver's account does not exist.
-                        throw ReceiverAccountNotFoundException()
-                    }
+                    transaction.set(transactionDocument, transactionData)
+
+                    // Update the sender's account transaction history.
+                    val senderTransactionHistory =
+                        senderQuerySnapshot.documents[0].get("account.transactionHistory") as MutableList<String>
+                    senderTransactionHistory.add(transactionDocument.id)
+                    transaction.update(
+                        senderAccountDocument,
+                        "account.transactionHistory",
+                        senderTransactionHistory
+                    )
+
+                    // Update the receiver's account transaction history.
+                    val receiverTransactionHistory =
+                        receiverQuerySnapshot.documents[0].get("account.transactionHistory") as MutableList<String>
+                    receiverTransactionHistory.add(transactionDocument.id)
+                    transaction.update(
+                        receiverAccountDocument,
+                        "account.transactionHistory",
+                        receiverTransactionHistory
+                    )
                 } else {
-                    // Handle the case where the sender's account does not exist.
-                    throw SenderAccountNotFoundException()
+                    // Throw an exception for insufficient balance.
+                    throw InsufficientBalanceException()
                 }
             }
-        } catch (e: Exception) {
+
             // Handle exceptions (e.g., InsufficientBalanceException, SenderAccountNotFoundException, ReceiverAccountNotFoundException)
+
         }
     }
-}
+
+ */
+
+
+
+
+
+

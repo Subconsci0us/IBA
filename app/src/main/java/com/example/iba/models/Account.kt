@@ -4,12 +4,12 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class Account(
-    val accountId: String = "",
+
     var balance: Double = 0.0,
     var transactionHistory: MutableList<Transaction> = mutableListOf()
 ) : Parcelable {
     constructor(source: Parcel) : this(
-        source.readString()!!,
+
         source.readDouble(),
         source.readParcelable(Transaction::class.java.classLoader)!!
     )
@@ -17,7 +17,7 @@ data class Account(
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(accountId)
+
         writeDouble(balance)
         writeParcelable(transactionHistory[0], flags)
     }
