@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iba.R
@@ -25,6 +26,7 @@ class TransactionHistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transaction_history)
+        setupActionBar()
 
         recyclerView = findViewById(R.id.RV_history)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -77,6 +79,19 @@ class TransactionHistoryActivity : AppCompatActivity() {
                 Toast.makeText(this, "Document snapshot doesn't exist", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun setupActionBar() {
+        val toolbarTransactionHistory = findViewById<Toolbar>(R.id.toolbar_transaction_History)
+        setSupportActionBar(toolbarTransactionHistory)
+
+        val actionBar = supportActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_white_color_back_24dp)
+            actionBar.title ="View Transaction History"
+        }
+
+        toolbarTransactionHistory.setNavigationOnClickListener { onBackPressed() }
     }
 }
 

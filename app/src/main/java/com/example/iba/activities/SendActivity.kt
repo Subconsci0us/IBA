@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import com.example.iba.R
 import com.example.iba.firebase.BankingRepository
 
-class SendActivity : AppCompatActivity() {
+class SendActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
+
+     setupActionBar()
 
 
         val recipientEmailEditText = findViewById<EditText>(R.id.et_email_send_money)
@@ -34,4 +37,20 @@ class SendActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun setupActionBar() {
+        val toolbarSendActivity = findViewById<Toolbar>(R.id.toolbar_send_activity)
+        setSupportActionBar(toolbarSendActivity)
+
+        val actionBar = supportActionBar
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_white_color_back_24dp)
+            actionBar.title ="Send Money"
+        }
+
+        toolbarSendActivity.setNavigationOnClickListener { onBackPressed() }
+    }
+
+
 }

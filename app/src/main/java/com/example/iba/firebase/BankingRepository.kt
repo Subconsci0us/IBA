@@ -9,13 +9,14 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 
-val db = Firebase.firestore
 
 class BankingRepository : FirestoreClass() {
 
 
     private lateinit var mUserDetails: User
     fun getBalance(id: String, callback: (Number?) -> Unit) {
+        val db = Firebase.firestore
+
         val docRef = db.collection("users").document(id)
         docRef.addSnapshotListener { documentSnapshot, e ->
             if (e != null) {
@@ -37,6 +38,8 @@ class BankingRepository : FirestoreClass() {
     }
 
     fun getField(id: String, fieldName: String, callback: (String?) -> Unit) {
+        val db = Firebase.firestore
+
         val docRef = db.collection("users").document(id)
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
