@@ -28,6 +28,7 @@ class SendActivity : AppCompatActivity() {
                 // Call the transferTransaction() function directly.
                 BankingRepository().transferTransaction(recipientEmail, amount)
                 Toast.makeText(this, "Money sent successfully!", Toast.LENGTH_SHORT).show()
+
             } else {
                 Toast.makeText(this, "Please enter a valid amount.", Toast.LENGTH_SHORT).show()
             }

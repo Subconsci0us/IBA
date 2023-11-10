@@ -9,7 +9,7 @@ import java.util.Date
 
 data class Transaction(
     val transactionId: String = "",
-    val transactionDate: Date = Date(),
+    val transactionDate: String = "",
     val transactionType: TransactionType = TransactionType.DEPOSIT,
     val amount: Double = 0.0,
     val senderUuid: String = "",
@@ -17,7 +17,7 @@ data class Transaction(
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readString()!!,
-        source.readSerializable() as Date,
+        source.readString()!!,
         TransactionType.valueOf(source.readString()!!),
         source.readDouble(),
         source.readString()!!,

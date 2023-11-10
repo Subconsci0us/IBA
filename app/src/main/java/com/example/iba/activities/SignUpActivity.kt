@@ -88,8 +88,8 @@ class SignUpActivity : BaseActivity() {
                             )
                             val transaction = Transaction(
                                 transactionId = firebaseUser.uid,
-                                transactionDate = Date(),  // You can customize the date as needed
-                                transactionType = TransactionType.DEPOSIT,  // Set the transaction type as needed
+                                transactionDate = Date().toString(),  // You can customize the date as needed
+                                transactionType = TransactionType.TRANSFER,  // Set the transaction type as needed
                                 amount = 0.0,  // Set the amount as needed
                                 senderUuid = "sender-uuid",  // Set the sender UUID as needed
                                 receiverUuid = "receiver-uuid"  // Set the receiver UUID as needed
