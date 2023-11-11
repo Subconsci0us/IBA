@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    android:id="@+id/list_item_card"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="4dp"
     app:cardCornerRadius="8dp"
-    android:layout_margin="16dp">
+    android:layout_margin="15dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -24,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:text="Email : "
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 />
 
@@ -35,7 +37,7 @@
                 android:layout_marginStart="8dp"
                 android:text="Any"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 />
 
 
@@ -51,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:text="Transaction Type : "
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 />
 
@@ -62,7 +64,7 @@
                 android:layout_marginStart="8dp"
                 android:text="Any"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 />
 
 
@@ -78,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:text="Amount :"
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 />
 
@@ -89,7 +91,7 @@
                 android:layout_marginStart="8dp"
                 android:text="Any"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 />
 
 
@@ -106,7 +108,7 @@
                 android:layout_height="wrap_content"
                 android:text="Date : "
                 android:textColor="@color/black"
-                android:textSize="26sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 />
 
@@ -117,7 +119,7 @@
                 android:layout_marginStart="8dp"
                 android:text="Any"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 />
 
 

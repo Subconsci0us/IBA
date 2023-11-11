@@ -1,13 +1,16 @@
 package com.example.iba.activities
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iba.R
@@ -17,6 +20,7 @@ import com.example.iba.models.Transaction
 class SendActivity : BaseActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var latestTransactionsAdapter: TransactionAdapter
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_send)
@@ -28,12 +32,19 @@ class SendActivity : BaseActivity() {
         val recipientEmailEditText = findViewById<EditText>(R.id.et_email_send_money)
         val sendMoneyButton = findViewById<Button>(R.id.btn_send_money)
         val enterAmount = findViewById<EditText>(R.id.et_amount_send_money)
+        val cardview = findViewById<CardView>(R.id.list_item_card)
 
         recyclerView = findViewById(R.id.RV_activity_send)
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.setHasFixedSize(true)
 
         updateLatestTransactions()
+
+        cardview.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+
+        }
 
 
         sendMoneyButton.setOnClickListener {
