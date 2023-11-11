@@ -19,6 +19,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <EditText
         android:id="@+id/et_amount_send_money"
         android:layout_width="0dp"
@@ -34,6 +35,7 @@
         app:layout_constraintStart_toEndOf="@+id/et_email_send_money"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.146" />
+
 
     <EditText
         android:id="@+id/et_email_send_money"
@@ -61,6 +63,7 @@
         app:layout_constraintEnd_toStartOf="@+id/et_amount_send_money"
         app:layout_constraintTop_toBottomOf="@+id/et_email_send_money" />
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RV_activity_send"
         android:layout_width="409dp"
@@ -69,7 +72,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_send_money"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_send_money" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

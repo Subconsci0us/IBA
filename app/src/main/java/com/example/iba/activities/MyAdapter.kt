@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.iba.R
 import com.example.iba.models.Transaction
 
-class TransactionAdapter(private val transactions: List<Transaction>) :
+class TransactionAdapter(private var transactions:List<Transaction>) :
     RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,5 +34,9 @@ class TransactionAdapter(private val transactions: List<Transaction>) :
 
     override fun getItemCount(): Int {
         return transactions.size
+    }
+    fun updateData(newTransactions: List<Transaction>?) {
+        transactions = newTransactions ?: emptyList()
+        notifyDataSetChanged()
     }
 }
