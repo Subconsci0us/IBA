@@ -13,13 +13,16 @@ data class Transaction(
     val transactionType: TransactionType = TransactionType.DEPOSIT,
     val amount: Double = 0.0,
     val senderUuid: String = "",
-    val receiverUuid: String = ""
+    val receiverUuid: String = "",
+    val receiverEmail: String = ""
+
 ) : Parcelable {
     constructor(source: Parcel) : this(
         source.readString()!!,
         source.readString()!!,
         TransactionType.valueOf(source.readString()!!),
         source.readDouble(),
+        source.readString()!!,
         source.readString()!!,
         source.readString()!!
     )
@@ -33,6 +36,7 @@ data class Transaction(
         writeDouble(amount)
         writeString(senderUuid)
         writeString(receiverUuid)
+        writeString(receiverEmail)
     }
 
     companion object {

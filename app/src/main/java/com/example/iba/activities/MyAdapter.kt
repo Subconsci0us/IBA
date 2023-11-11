@@ -12,6 +12,7 @@ class TransactionAdapter(private val transactions: List<Transaction>) :
     RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val Transaction_successful_to: TextView = itemView.findViewById(R.id.tv_email_transactionHistory)
         val TransactionType: TextView = itemView.findViewById(R.id.tv_transactionType)
         val Transactionamount: TextView = itemView.findViewById(R.id.tv_transaction_amount)
         val TransactionDate: TextView = itemView.findViewById(R.id.tv_Date)
@@ -25,7 +26,7 @@ class TransactionAdapter(private val transactions: List<Transaction>) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val transaction: Transaction = transactions[position]
-
+        holder.Transaction_successful_to.text="${transaction.receiverEmail}"
         holder.TransactionType.text = "${transaction.transactionType}"
         holder.Transactionamount.text = "${transaction.amount}"
         holder.TransactionDate.text="${transaction.transactionDate}"

@@ -8,6 +8,9 @@ import com.example.iba.models.User
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.TimeZone
 
 
 class BankingRepository : FirestoreClass() {
@@ -87,8 +90,14 @@ class BankingRepository : FirestoreClass() {
 
                         if (senderBalance != null && receiverBalance != null) {
                             if (senderBalance >= amount && receiverBalance >= amount) {
+
+                                val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
+                                sdf.timeZone = TimeZone.getTimeZone("Asia/Karachi")
                                 // Create a Transaction object
                                 val transaction = Transaction(
+
+                                    transactionDate=sdf.format(Date()),
+                                    receiverEmail= receiverEmail,
                                     transactionType = TransactionType.TRANSFER,
                                     amount = amount,
                                     senderUuid = getCurrentUserID(),

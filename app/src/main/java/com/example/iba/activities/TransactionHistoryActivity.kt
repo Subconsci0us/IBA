@@ -42,44 +42,71 @@ class TransactionHistoryActivity : AppCompatActivity() {
 
             if (documentSnapshot.exists()) {
                 val account = documentSnapshot.data?.get("account") as? Map<String, Any>
-                val transactionHistory = account?.get("transactionHistory") as? List<Map<String, Any>> ?: emptyList()
+                val transactionHistory =
+                    account?.get("transactionHistory") as? List<Map<String, Any>> ?: emptyList()
 
                 Log.d("Checking", "DocumentSnapshot data: ${documentSnapshot.data}")
                 Log.d("Checking", "transactionHistory ${transactionHistory}")
 
                 // Log the size and details of the transactionHistory list
                 Log.d("TransactionHistory", "Transaction History Size: ${transactionHistory.size}")
-           /*
-                transactionHistory.forEachIndexed { index, transaction ->
-                    Log.d("TransactionHistory321", "Transaction $index: $transaction")
+
+                val transactions = mutableListOf<Transaction>()
+
+// Iterate through each transaction ID and fetch details
+                transactionHistory.forEach { transactionMap ->
+                    val transactionId = transactionMap["transactionId"].toString()
+
+                    // Fetch the corresponding transaction details from the "transactions" collection
+                    fetchTransactionDetails(transactionId) { transactionDetails ->
+                        // Create a Transaction object and add it to the list
+                        val transaction = transactionDetails?.let {
+                            Transaction(
+                                receiverEmail = it["receiverEmail"].toString(),
+                                transactionDate = it["transactionDate"].toString(),
+                                transactionType = TransactionType.valueOf(it["transactionType"].toString()),
+                                amount = it["amount"] as? Double ?: 0.0,
+                            )
+                        }
+                        transaction?.let { transactions.add(it) }
+
+                        // Check if the list is complete and update the RecyclerView adapter
+                        if (transactions.size == transactionHistory.size) {
+                            // Sort transactions in descending order based on transactionDate
+                            val sortedTransactions =
+                                transactions.sortedByDescending { it.transactionDate }
+
+                            // Use the safe call operator to check for null
+                            val adapter = TransactionAdapter(sortedTransactions)
+                            recyclerView.adapter = adapter
+                        }
+                    }
                 }
-
-            */
-
-                val transactions = transactionHistory.map { transactionMap ->
-                    val transactionTypeString = transactionMap["transactionType"].toString()
-                    val amount = (transactionMap["amount"] as? Double) ?: 0.0
-                    val transactionDate = (transactionMap["transactionDate"] as? Date) ?: Date()
-
-                    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm:ss")
-                    sdf.timeZone = TimeZone.getTimeZone("Asia/Karachi") // Set the time zone to Pakistan Standard Time (PST)
-
-                    Transaction(
-                        transactionType = TransactionType.valueOf(transactionTypeString),
-                        amount = amount,
-                        transactionDate = sdf.format(transactionDate), // Format the date
-                        // Add other properties as needed
-                    )
-                }
-
-                // Use the safe call operator to check for null
-                val adapter = TransactionAdapter(transactions)
-                recyclerView.adapter = adapter
             } else {
                 Toast.makeText(this, "Document snapshot doesn't exist", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    private fun fetchTransactionDetails(
+        transactionId: String,
+        onTransactionDetailsFetched: (Map<String, Any>?) -> Unit
+    ) {
+        db = FirebaseFirestore.getInstance()
+        val documentReference = db.collection("transactions").document(transactionId)
+
+        documentReference.get().addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                val transactionDetails = documentSnapshot.data as Map<String, Any>?
+                onTransactionDetailsFetched(transactionDetails)
+            } else {
+                onTransactionDetailsFetched(null)
+            }
+        }.addOnFailureListener { e ->
+            onTransactionDetailsFetched(null)
+        }
+    }
+
     private fun setupActionBar() {
         val toolbarTransactionHistory = findViewById<Toolbar>(R.id.toolbar_transaction_History)
         setSupportActionBar(toolbarTransactionHistory)
@@ -88,7 +115,7 @@ class TransactionHistoryActivity : AppCompatActivity() {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeAsUpIndicator(R.drawable.ic_white_color_back_24dp)
-            actionBar.title ="View Transaction History"
+            actionBar.title = "View Transaction History"
         }
 
         toolbarTransactionHistory.setNavigationOnClickListener { onBackPressed() }
