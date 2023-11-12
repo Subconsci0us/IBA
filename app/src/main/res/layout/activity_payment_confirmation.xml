@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-
     tools:context=".activities.PaymentConfirmationActivity">
 
     <!-- AppBar Section -->
@@ -29,6 +27,8 @@
         android:id="@+id/cardView_fromEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="50dp"
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="8dp">
 
@@ -37,7 +37,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
-            android:layout_marginTop="15dp">
+
+            >
 
             <TextView
                 android:id="@+id/textView"
@@ -51,8 +52,9 @@
                 android:id="@+id/tv_fromEmail_activity_Confirmation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="EMAIL" />
+                android:text="EMAIL"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -62,6 +64,7 @@
         android:id="@+id/cardView_toEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="8dp">
 
@@ -69,6 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+
             android:padding="16dp">
 
             <TextView
@@ -83,22 +87,36 @@
                 android:id="@+id/tv_toEmail_activity_Confirmation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="EMAIL" />
+                android:text="EMAIL"
+                android:textColor="#000000"
+                android:textSize="20sp" />
 
         </LinearLayout>
+
+
     </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tv_Balance_payment_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:text="Balance : "
+        android:textColor="#000000" />
+
 
     <!-- Amount EditText -->
     <EditText
         android:id="@+id/editTextNumber_payment_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="16dp"
-        android:padding="16dp"
         android:ems="10"
         android:hint="Amount"
-        android:inputType="number" />
+        android:inputType="number"
+        android:padding="16dp" />
 
     <!-- Send Money Button -->
     <Button
@@ -106,6 +124,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Pay now" />
+        android:layout_marginHorizontal="25dp"
+        android:text="Pay now"
+        android:background="@drawable/shape_button_rounded"
+        android:foreground="?attr/selectableItemBackground"
+        android:paddingTop="@dimen/btn_paddingTopBottom"
+        android:paddingBottom="@dimen/btn_paddingTopBottom"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/btn_text_size"
+        />
 
 </LinearLayout>

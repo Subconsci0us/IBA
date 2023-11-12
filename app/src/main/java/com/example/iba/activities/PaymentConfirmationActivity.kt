@@ -20,6 +20,8 @@ class PaymentConfirmationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_payment_confirmation)
         setupActionBar()
 
+        getBalance()
+
         var recipient: String? = intent.getStringExtra("recipientEmail")
         var recipientEmail = findViewById<TextView>(R.id.tv_toEmail_activity_Confirmation)
         val enterAmount = findViewById<EditText>(R.id.editTextNumber_payment_confirm)
@@ -56,6 +58,18 @@ class PaymentConfirmationActivity : AppCompatActivity() {
             }
 
 
+        }
+    }
+    fun getBalance() {
+        val banking = BankingRepository() // Create an instance of the Banking class
+        val userId = banking.getCurrentUserID()// Replace with the actual user ID
+        banking.getBalance(userId) { balance ->
+            if (balance != null) {
+                val tv_balance = findViewById<TextView>(R.id.tv_Balance_payment_confirm)
+                tv_balance.text = "Balance = "+balance.toString() + " Rs"
+            } else {
+                println("Failed to retrieve the balance.")
+            }
         }
     }
 
