@@ -49,7 +49,6 @@ class SendActivity : BaseActivity() {
         sendMoneyButton.setOnClickListener {
             val recipientEmail = recipientEmailEditText.text.toString()
             if (recipientEmail.isNotEmpty()) {
-
                 val intent = Intent(this, PaymentConfirmationActivity::class.java)
                 intent.putExtra("recipientEmail", recipientEmail)
                 startActivity(intent);
