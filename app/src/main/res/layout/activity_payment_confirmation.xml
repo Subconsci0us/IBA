@@ -6,8 +6,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
+
     tools:context=".activities.PaymentConfirmationActivity">
+
+    <!-- AppBar Section -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_payment_confirmation"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <!-- From Email Section -->
     <androidx.cardview.widget.CardView
@@ -21,7 +36,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:layout_marginTop="15dp">
 
             <TextView
                 android:id="@+id/textView"
@@ -89,6 +105,7 @@
         android:id="@+id/btn_send_money_payment_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pay now"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:text="Pay now" />
+
 </LinearLayout>

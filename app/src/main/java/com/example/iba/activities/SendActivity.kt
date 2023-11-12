@@ -36,11 +36,9 @@ class SendActivity : BaseActivity() {
         // Initialize and set up the RecyclerView for displaying the latest transactions
         latestTransactionsAdapter = TransactionAdapter(emptyList()) { transaction ->
             // Handle the click event (e.g., print email and amount)
-            Toast.makeText(
-                this@SendActivity,
-                "Email: ${transaction.receiverEmail}, Amount: ${transaction.amount}",
-                Toast.LENGTH_SHORT
-            ).show()
+            val intent = Intent(this, PaymentConfirmationActivity::class.java)
+            intent.putExtra("recipientEmail", transaction.receiverEmail)
+            startActivity(intent);
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -48,21 +46,18 @@ class SendActivity : BaseActivity() {
 
         updateLatestTransactions()
 
-
-
-
-            sendMoneyButton.setOnClickListener {
-                val recipientEmail = recipientEmailEditText.text.toString()
-                if (recipientEmail.isNotEmpty()) {
+        sendMoneyButton.setOnClickListener {
+            val recipientEmail = recipientEmailEditText.text.toString()
+            if (recipientEmail.isNotEmpty()) {
 
                 val intent = Intent(this, PaymentConfirmationActivity::class.java)
                 intent.putExtra("recipientEmail", recipientEmail)
                 startActivity(intent);
 
             } else {
-                    Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
 
-        }
+            }
         }
 
     }
