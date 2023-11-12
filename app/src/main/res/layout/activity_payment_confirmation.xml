@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".activities.PaymentConfirmationActivity">
+
+    <!-- From Email Section -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_fromEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="From Email :"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_fromEmail_activity_Confirmation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="EMAIL" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- To Email Section -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_toEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To Email :"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_toEmail_activity_Confirmation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="EMAIL" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Amount EditText -->
+    <EditText
+        android:id="@+id/editTextNumber_payment_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:padding="16dp"
+        android:ems="10"
+        android:hint="Amount"
+        android:inputType="number" />
+
+    <!-- Send Money Button -->
+    <Button
+        android:id="@+id/btn_send_money_payment_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Money"
+        android:layout_marginBottom="16dp" />
+</LinearLayout>

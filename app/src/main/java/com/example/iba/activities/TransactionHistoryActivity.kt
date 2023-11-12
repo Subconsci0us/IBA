@@ -77,7 +77,11 @@ class TransactionHistoryActivity : AppCompatActivity() {
                                 transactions.sortedByDescending { it.transactionDate }
 
                             // Use the safe call operator to check for null
-                            val adapter = TransactionAdapter(sortedTransactions)
+                            val adapter = TransactionAdapter(sortedTransactions){ clickedTransaction ->
+                                // Handle the click event here using the clickedTransaction object
+                        //        Toast.makeText(this, "Clicked on transaction", Toast.LENGTH_SHORT).show()
+                            }
+
                             recyclerView.adapter = adapter
                         }
                     }

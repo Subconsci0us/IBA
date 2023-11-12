@@ -4,11 +4,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iba.R
 import com.example.iba.models.Transaction
 
-class TransactionAdapter(private var transactions:List<Transaction>) :
+class TransactionAdapter(private var transactions:List<Transaction>, private val onItemClick: (Transaction) -> Unit) :
     RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -16,6 +17,16 @@ class TransactionAdapter(private var transactions:List<Transaction>) :
         val TransactionType: TextView = itemView.findViewById(R.id.tv_transactionType)
         val Transactionamount: TextView = itemView.findViewById(R.id.tv_transaction_amount)
         val TransactionDate: TextView = itemView.findViewById(R.id.tv_Date)
+
+        init {
+            // Set up click listener for the card view
+            itemView.findViewById<CardView>(R.id.list_item_card).setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onItemClick(transactions[position])
+                }
+            }
+        }
 
     }
 
