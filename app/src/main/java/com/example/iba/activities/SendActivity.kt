@@ -27,7 +27,7 @@ class SendActivity : BaseActivity() {
 
         val recipientEmailEditText = findViewById<EditText>(R.id.et_email_send_money)
         val sendMoneyButton = findViewById<Button>(R.id.btn_send_money)
-      //  val enterAmount = findViewById<EditText>(R.id.et_amount_send_money)
+        //  val enterAmount = findViewById<EditText>(R.id.et_amount_send_money)
 
         recyclerView = findViewById(R.id.RV_activity_send)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -48,12 +48,25 @@ class SendActivity : BaseActivity() {
 
         updateLatestTransactions()
 
-        sendMoneyButton.setOnClickListener {
-            val recipientEmail = recipientEmailEditText.text.toString()
-            val intent = Intent(this,PaymentConfirmationActivity::class.java)
-            intent.putExtra("recipientEmail",recipientEmail)
-            startActivity(intent);
-            /*
+
+
+
+            sendMoneyButton.setOnClickListener {
+                val recipientEmail = recipientEmailEditText.text.toString()
+                if (recipientEmail.isNotEmpty()) {
+
+                val intent = Intent(this, PaymentConfirmationActivity::class.java)
+                intent.putExtra("recipientEmail", recipientEmail)
+                startActivity(intent);
+
+            } else {
+                    Toast.makeText(this, "Enter email", Toast.LENGTH_SHORT).show()
+
+        }
+        }
+
+    }
+    /*
             val amountText = enterAmount.text.toString()
 
             if (amountText.isNotEmpty()) {
@@ -64,12 +77,10 @@ class SendActivity : BaseActivity() {
                 Toast.makeText(this, "Money sent successfully!", Toast.LENGTH_SHORT).show()
 
 
-             */
-              //  updateLatestTransactions()
-           // }
-            }
-        }
 
+              //  updateLatestTransactions()
+
+             */
 
 
     private fun updateLatestTransactions() {
