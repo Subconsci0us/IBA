@@ -32,7 +32,7 @@ class MyProfileActivity : BaseActivity() {
         private const val PICK_IMAGE_REQUEST_CODE = 2
     }
 
-    // Add a global variable for URI of a selected image from phone storage.
+
     private var mSelectedImageFileUri: Uri? = null
 
     // Add the global variables for UserDetails and Profile Image URL
