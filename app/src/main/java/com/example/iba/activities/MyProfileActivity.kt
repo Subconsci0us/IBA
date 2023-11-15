@@ -1,6 +1,7 @@
 package com.example.iba.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,6 +22,7 @@ import com.example.iba.R
 import com.example.iba.firebase.FirestoreClass
 import com.example.iba.models.User
 import com.example.iba.utils.Constants
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.IOException
@@ -45,6 +47,7 @@ class MyProfileActivity : BaseActivity() {
 
     private lateinit var miv_user_image: ImageView
 
+    @SuppressLint("MissingInflatedId")
     override  fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_my_profile)
@@ -84,6 +87,32 @@ class MyProfileActivity : BaseActivity() {
                 updateUserProfileData()
             }
         }
+
+        val btn_sign_out = findViewById<Button>(R.id.btn_sign_out_myprofile_activity)
+
+        btn_sign_out.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+
+            // Send the user to the intro screen of the application.
+            val intent = Intent(this, IntroActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
+
+/*
+        R.id.nav_sign_out -> {
+            // Here sign outs the user from firebase in this device.
+            FirebaseAuth.getInstance().signOut()
+
+            // Send the user to the intro screen of the application.
+            val intent = Intent(this, IntroActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
+
+ */
     }
 
     override fun onRequestPermissionsResult(
@@ -212,30 +241,25 @@ class MyProfileActivity : BaseActivity() {
      * A function to update the user profile details into the database.
      */
     private fun updateUserProfileData() {
-
         val userHashMap = HashMap<String, Any>()
         val et_name = findViewById<EditText>(R.id.et_name)
-        val et_mobile= findViewById<EditText>(R.id.et_mobile)
-
-
+        val et_mobile = findViewById<EditText>(R.id.et_mobile)
 
         if (mProfileImageURL.isNotEmpty() && mProfileImageURL != mUserDetails.image) {
             userHashMap[Constants.IMAGE] = mProfileImageURL
-
         }
 
         if (et_name.text.toString() != mUserDetails.name) {
             userHashMap[Constants.NAME] = et_name.text.toString()
-
         }
 
-        if (et_mobile.text.toString() != mUserDetails.mobile.toString()) {
-            userHashMap[Constants.MOBILE] = et_mobile.text.toString().toLong()
-
+        // Check if et_mobile is not empty before converting to Long
+        val mobileString = et_mobile.text.toString()
+        if (mobileString.isNotEmpty() && mobileString != mUserDetails.mobile.toString()) {
+            userHashMap[Constants.MOBILE] = mobileString.toLong()
         }
 
         // Update the data in the database.
-
         FirestoreClass().updateUserProfileData(this@MyProfileActivity, userHashMap)
     }
 

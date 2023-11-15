@@ -161,16 +161,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 )
             }
 
-            R.id.nav_sign_out -> {
-                // Here sign outs the user from firebase in this device.
-                FirebaseAuth.getInstance().signOut()
 
-                // Send the user to the intro screen of the application.
-                val intent = Intent(this, IntroActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
-                finish()
-            }
         }
         mdrawerLayout.closeDrawer(GravityCompat.START)
 
